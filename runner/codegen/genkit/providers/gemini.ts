@@ -13,6 +13,7 @@ export class GeminiModelProvider extends GenkitModelProvider {
 
   protected models = {
     'gemini-3-pro-preview': () => googleAI.model('gemini-3-pro-preview'),
+    'gemini-3-flash-preview': () => googleAI.model('gemini-3-flash-preview'),
     'gemini-2.5-pro': () => googleAI.model('gemini-2.5-pro'),
     'gemini-2.5-flash': () => googleAI.model('gemini-2.5-flash'),
     'gemini-2.5-flash-lite': () => googleAI.model('gemini-2.5-flash-lite'),
@@ -29,6 +30,17 @@ export class GeminiModelProvider extends GenkitModelProvider {
         interval: 1000 * 60 * 1.5, // Refresh tokens after 1.5 minutes to be on the safe side.
       }),
       countTokens: prompt => this.countGeminiTokens(prompt, 'gemini-3-pro-preview'),
+    },
+    'googleai/gemini-3-flash-preview': {
+      requestPerMinute: new RateLimiter({
+        tokensPerInterval: 1000,
+        interval: 1000 * 60 * 1.5, // Refresh tokens after 1.5 minutes to be on the safe side.
+      }),
+      tokensPerMinute: new RateLimiter({
+        tokensPerInterval: 1_000_000 * 0.75, // *0.75 to be more resilient to token count deviations
+        interval: 1000 * 60 * 1.5, // Refresh tokens after 1.5 minutes to be on the safe side.
+      }),
+      countTokens: prompt => this.countGeminiTokens(prompt, 'gemini-3-flash-preview'),
     },
     // See: https://ai.google.dev/gemini-api/docs/rate-limits#tier-1
     // 150 per minute requests is Gemini Pro's limit right now.
