@@ -1,10 +1,10 @@
-import {GenkitRunner} from '../codegen/genkit/genkit-runner.js';
+import {AiSDKRunner} from '../codegen/ai-sdk/ai-sdk-runner.js';
 import {DEFAULT_SUMMARY_MODEL} from '../configuration/constants.js';
 import {AssessmentResult, ReportContextFilter, RatingContextFilter} from '../shared-interfaces.js';
 import {chatWithReportAI} from './report-ai-chat.js';
 
 export async function summarizeReportWithAI(
-  llm: GenkitRunner,
+  llm: AiSDKRunner,
   abortSignal: AbortSignal,
   assessments: AssessmentResult[],
 ) {

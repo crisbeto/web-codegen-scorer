@@ -1,6 +1,7 @@
 import {AnthropicProviderOptions} from '@ai-sdk/anthropic';
 import {GoogleGenerativeAIProviderOptions} from '@ai-sdk/google';
 import {OpenAIResponsesProviderOptions} from '@ai-sdk/openai';
+import {GroqProviderOptions} from '@ai-sdk/groq';
 import {
   FilePart,
   generateText,
@@ -26,8 +27,14 @@ import {
 import {ANTHROPIC_MODELS, getAiSdkModelOptionsForAnthropic} from './anthropic.js';
 import {getAiSdkModelOptionsForGoogle, GOOGLE_MODELS} from './google.js';
 import {getAiSdkModelOptionsForOpenAI, OPENAI_MODELS} from './openai.js';
+import {getAiSdkModelOptionsForGroq, GROQ_MODELS} from './groq.js';
 
-const SUPPORTED_MODELS = [...GOOGLE_MODELS, ...ANTHROPIC_MODELS, ...OPENAI_MODELS] as const;
+const SUPPORTED_MODELS = [
+  ...GOOGLE_MODELS,
+  ...ANTHROPIC_MODELS,
+  ...OPENAI_MODELS,
+  ...GROQ_MODELS,
+] as const;
 
 // Increased to a very high value as we rely on an actual timeout
 // that aborts stuck LLM requests. WCS is targeting stability here;
@@ -143,12 +150,14 @@ export class AiSDKRunner implements LlmRunner {
     providerOptions:
       | {anthropic: AnthropicProviderOptions}
       | {google: GoogleGenerativeAIProviderOptions}
-      | {openai: OpenAIResponsesProviderOptions};
+      | {openai: OpenAIResponsesProviderOptions}
+      | {groq: GroqProviderOptions};
   }> {
     const result =
       (await getAiSdkModelOptionsForGoogle(request.model)) ??
       (await getAiSdkModelOptionsForAnthropic(request.model)) ??
-      (await getAiSdkModelOptionsForOpenAI(request.model));
+      (await getAiSdkModelOptionsForOpenAI(request.model)) ??
+      (await getAiSdkModelOptionsForGroq(request.model));
     if (result === null) {
       throw new Error(`Unexpected unsupported model: ${request.model}`);
     }
